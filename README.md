@@ -7,6 +7,8 @@ Lab Exercises (Week 01 - 05, 07 - 10) </br>
 Assignments (1 and 2)
 
 ## COMP1521: Computer Systems Fundamentals
+Lab Exercises (Week 01 - 05, 07 - 10) <br/>
+Assignments (1 and 2)
 
 ## COMP1531: Software Engineering Fundamentals
 
