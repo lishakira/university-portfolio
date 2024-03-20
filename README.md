@@ -3,6 +3,8 @@ This repository details all my past projects that I did in university. It also i
 
 # Courses and Projects
 ## COMP1511: Programming Fundamentals
+### Lab Exercises (Week 01 - 05, 07 - 10)
+### Assignments (1 and 2)
 
 ## COMP1521: Computer Systems Fundamentals
 
