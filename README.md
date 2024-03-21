@@ -1,5 +1,5 @@
 # University Portfolio
-This repository details all my past projects that I did in university. It also includes the descriptions and marks that I received. The purpose of this repository is to showcase my previous experiences to potential job employers. Please refrain from sharing my repository without my consent or for other purposes.
+This repository details all my past projects that I did in university. It also includes the descriptions of what they are. The purpose of this repository is to showcase my previous experiences to potential job employers. Please refrain from sharing my repository without my consent or for other purposes.
 
 # Courses and Projects
 ## COMP1511: Programming Fundamentals
