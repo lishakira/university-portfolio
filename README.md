@@ -33,6 +33,7 @@ Assignments (1 and 2)
 Assignments (1, 2, and 3)
 
 ## COMP6841: Extended Security Engineering
+Case Analyses (Week 01 - 05, 07 - 09) <br/>
 Blogs (Week 01 - 05, 07 - 09) <br/>
 Challenge Activities (Week 01 - 05, 07 - 09) <br/>
 Something Awesome Project
