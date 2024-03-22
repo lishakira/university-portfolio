@@ -3,26 +3,32 @@ This repository details all my past projects that I did in university. The purpo
 
 # Courses and Projects
 ## COMP1511: Programming Fundamentals
+### C Language
 Lab Exercises (Week 01 - 05, 07 - 09) </br>
 Assignments (1 and 2)
 
 ## COMP1521: Computer Systems Fundamentals
+### C and MIPSY Languages
 Lab Exercises (Week 01 - 05, 07 - 10) <br/>
 Assignments (1 and 2)
 
 ## COMP1531: Software Engineering Fundamentals
+### Language
 Lab Exercises (Week 01 - 05) <br/>
 Project (Backend)
 
 ## COMP2041: Software Construction
+### C and Dash Languages
 Lab Exercises (Week 01 - 05, 07 - 10) <br/>
 Assignments (1 and 2)
 
 ## COMP2511: Object-oriented Design and Programming
+### Java Language
 Lab Exercises (Week 01 - 05, 07 - 08) <br/>
 Assignments (1 and 2)
 
 ## COMP2521: Data Structures and Algorithms
+### C Language
 Lab Exercises (Week 01 - 05, 07 - 08) <br/>
 Assignments (1 and 2)
 
@@ -30,9 +36,12 @@ Assignments (1 and 2)
 Assignments (0, 1, 2, and 3)
 
 ## COMP3311: Database Systems
+### SQL Language
 Assignments (1 and 2)
 
 ## COMP6080: Web Front-end Programming
+### JavaScript, HTML, and CSS Languages
+### React.js and Node.js Libraries
 Assignments (1, 2, and 3)
 
 ## COMP6841: Extended Security Engineering
@@ -42,6 +51,8 @@ Challenge Activities (Week 01 - 05, 07 - 09) <br/>
 Something Awesome Project
 
 ## COMP9313: Big Data Management
+### Python Language
+### Apache Spark, HDFS, MapReduce, and NoSQL Frameworks
 Assignments (1, 2, and 3)
 
 ## DESN1000: Engineering Design
