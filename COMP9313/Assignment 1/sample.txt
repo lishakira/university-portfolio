@@ -1,0 +1,30 @@
+Foster Weather Station,2015-06-09,45.0
+Oak Street Weather Station,2015-06-03,67.0
+Foster Weather Station,2015-05-25,49.0
+Oak Street Weather Station,2015-05-28,56.0
+Oak Street Weather Station,2015-06-14,79.0
+Oak Street Weather Station,2015-06-12,95.0
+Foster Weather Station,2015-06-07,77.0
+Oak Street Weather Station,2015-06-09,65.0
+Oak Street Weather Station,2015-06-06,90.0
+Foster Weather Station,2015-06-01,79.0
+Oak Street Weather Station,2015-05-31,82.0
+Oak Street Weather Station,2015-05-31,89.0
+Foster Weather Station,2015-06-15,85.0
+Foster Weather Station,2015-05-27,76.0
+Foster Weather Station,2015-06-04,61.0
+Oak Street Weather Station,2015-06-13,98.0
+Foster Weather Station,2015-06-11,84.0
+Oak Street Weather Station,2015-06-13,86.0
+Oak Street Weather Station,2015-06-09,38.0
+Foster Weather Station,2015-06-10,76.0
+Foster Weather Station,2015-06-11,88.0
+Foster Weather Station,2015-06-03,82.0
+Oak Street Weather Station,2015-05-25,52.0
+Foster Weather Station,2015-05-28,74.0
+Foster Weather Station,2015-06-07,84.0
+Foster Weather Station,2015-05-27,58.0
+Foster Weather Station,2015-06-04,71.0
+Foster Weather Station,2015-06-06,79.0
+Foster Weather Station,2015-06-01,70.0
+Oak Street Weather Station,2015-06-02,77.0
