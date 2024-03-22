@@ -1,0 +1,168 @@
+#! /usr/bin/env python3
+
+
+"""
+COMP3311
+23T1
+Assignment 2
+Pokemon Database
+
+Written by: Shakira Li z5339356
+Written on: 10 April 2023
+
+Possible Evolutions
+
+Given the name of a pokemon,
+display a list of all the pokemon that could evolve into the given pokemon,
+and a list of all the pokemon that the given pokemon could evolve into.
+"""
+
+
+import sys
+import psycopg2
+import helpers
+
+
+### Constants
+USAGE = f"Usage: {sys.argv[0]} <Pokemon Name>"
+
+
+### Globals
+db = None
+Pokemon_Name = None
+
+
+### Command-line args
+if len(sys.argv) != 2:
+    print(USAGE, file=sys.stderr)
+    sys.exit(1)
+Pokemon_Name = helpers.clean(sys.argv[1])
+
+### Helper functions
+def pokemon_error() -> int:
+    # checks if the Pokemon exists in the Pokemon series
+    # grabs the Pokedex_Number of the Pokemon, if it exists
+    exist_qry = """
+    SELECT (P.ID).Pokedex_Number
+        FROM Pokemon P
+        WHERE P.Name = %s
+    """
+    
+    # run sql
+    cur.execute(exist_qry, [Pokemon_Name, ])
+    Pokedex_Number = cur.fetchone()
+    
+    if Pokedex_Number is None:
+        sys.stderr.write("'%s' isn't a Pokemon that exists.\n" % Pokemon_Name)
+        exit(1)
+        
+    return Pokedex_Number[0]
+
+def evolution_print(curr_pokemon, prev_pokemon):
+    if curr_pokemon != prev_pokemon:
+        print("\n")
+        print("\t'%s' when the following requirements are satisfied:" % curr_pokemon)
+        
+def requirements_print(evolution, curr_pokemon, prev_pokemon, curr_id, prev_id):   
+    if curr_id != prev_id and curr_pokemon == prev_pokemon:
+        print("\t\tOR")
+    
+    if curr_id == prev_id:
+        print("\t\t\tAND")
+
+    # checks if requirements include invertion 
+    # prints out the appropriate output
+    if evolution[3] == False:
+        print("\t\t\t\t%s" % evolution[2])
+    else:
+        print("\t\t\t\tNOT %s" % evolution[2])
+                     
+def information_print(evolution_type, evolve_type, evolution_info):
+    # prints the evolution information
+    if evolution_info == []:
+        print("'%s' doesn't have any %s." % (Pokemon_Name, evolution_type))
+    else:
+        print("'%s' can evolve %s:" % (Pokemon_Name, evolve_type))
+        
+    # stores the previos Pokemon Name
+    prev_pokemon = ''
+    # stores the previos Evolution ID
+    prev_id = -1
+    for evolution in evolution_info:
+        # stores the current Pokemon Name
+        curr_pokemon = evolution[1]
+        # stores the current Evolution ID
+        curr_id = evolution[0]
+        
+        # prints the evolution Pokemon's information
+        evolution_print(curr_pokemon, prev_pokemon)
+           
+        # prints the requirements needed for the evolution 
+        requirements_print(evolution, curr_pokemon, prev_pokemon, curr_id, prev_id)
+            
+        # stores the information of the previous Pokemon
+        prev_pokemon = curr_pokemon
+        prev_id = curr_id
+           
+def main():
+    # checks if the Pokemon exists within the Pokedex
+    # if it does, returns the Pokemon ID of the Pokemon
+    Pokedex_Number = pokemon_error()
+    
+    # grabs the information for the evolution of the Pokemon
+    # information stored in each index:
+        # [0] = Evolution ID
+        # [1] = Pokemon's Name
+        # [2] = Evolution Requirements
+        # [3] = Requirement's Invertion
+    pre_evolution_qry = """
+    SELECT E.ID, P.Name, R.Assertion, ER.Inverted
+        FROM Requirements R
+            JOIN Evolution_Requirements ER ON R.ID = ER.Requirement
+            JOIN Evolutions E ON ER.Evolution = E.ID
+            JOIN Pokemon P ON E.Pre_Evolution = P.ID
+        WHERE (E.Post_Evolution).Pokedex_Number = %s
+        ORDER BY E.ID, ER.Inverted, R.ID
+    """
+    
+    post_evolution_qry = """
+    SELECT E.ID, P.Name, R.Assertion, ER.Inverted
+        FROM Requirements R
+            JOIN Evolution_Requirements ER ON R.ID = ER.Requirement
+            JOIN Evolutions E ON ER.Evolution = E.ID
+            JOIN Pokemon P ON E.Post_Evolution = P.ID
+        WHERE (E.Pre_Evolution).Pokedex_Number = %s
+        ORDER BY E.ID, ER.Inverted, R.ID
+    """
+    
+    # run sql
+    cur.execute(pre_evolution_qry, [Pokedex_Number])
+    pre_evolution_info = cur.fetchall()
+    cur.execute(post_evolution_qry, [Pokedex_Number])
+    post_evolution_info = cur.fetchall()
+    
+    # prints the pre_evolution information
+    information_print('pre-evolutions', 'from', pre_evolution_info)
+    print("\n")
+    
+    # prints the post_evolution information
+    information_print('post-evolutions', 'into', post_evolution_info)
+    print("\n")
+    
+
+if __name__ == '__main__':
+    try:
+        db = psycopg2.connect(dbname="ass2")
+        cur = db.cursor()
+        main()
+    except psycopg2.Error as err:
+        print("DB error: ", err)
+    except Exception as err:
+        print("Internal Error: ", err)
+        raise err
+    finally:
+        if cur is not None:
+            cur.close()
+        if db is not None:
+            db.close()
+    sys.exit(0)

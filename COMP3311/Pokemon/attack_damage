@@ -1,0 +1,170 @@
+#! /usr/bin/env python3
+
+
+"""
+COMP3311
+23T1
+Assignment 2
+Pokemon Database
+
+Written by: Shakira Li z5339356
+Written on: 13 April 2023
+
+Attack Damage
+
+Given the name of an attacking, and a defending pokemon along with the name of a game in the Pokemon series,
+display a list, ordered from lowest to highest damage,
+of all the moves the attacking pokemon could use on the defending pokemon in the given game.
+"""
+
+
+import sys
+import psycopg2
+import helpers
+
+
+### Constants
+USAGE = f"Usage: {sys.argv[0]} <Attacking Pokemon Name> <Defending Pokemon Name> <Pokemon Game Name>"
+
+
+### Globals
+db = None
+Attacking_Pokemon_Name = None
+Defending_Pokemon_Name = None
+Pokemon_Game_Name      = None
+
+
+### Command-line args
+if len(sys.argv) != 4:
+    print(USAGE, file=sys.stderr)
+    sys.exit(1)
+Attacking_Pokemon_Name = helpers.clean(sys.argv[1])
+Defending_Pokemon_Name = helpers.clean(sys.argv[2])
+Pokemon_Game_Name      = helpers.clean(sys.argv[3])
+
+### Helper functions
+def pokemon_error(Pokemon_Name):
+    # grabs the Pokedex_Number of the Pokemon, if it exists
+    exist_qry = """
+    SELECT P.ID
+        FROM Pokemon P
+        WHERE P.Name = %s
+    """
+    
+    # run sql
+    cur.execute(exist_qry, [Pokemon_Name, ])
+    Pokemon_ID = cur.fetchone()
+    
+    if Pokemon_ID is None:
+        sys.stderr.write("'%s' isn't a Pokemon that exists.\n" % Pokemon_Name)
+        exit(1)
+        
+def game_error():
+	# checks if the Game exists in the Pokemon series
+    games_qry = """
+    SELECT G.ID
+        FROM Games G
+        WHERE G.Name = %s
+    """
+    
+    # run sql
+    cur.execute(games_qry, [Pokemon_Game_Name, ])
+    Games_ID = cur.fetchone()
+     
+    if Games_ID is None:
+        sys.stderr.write("'Pokemon %s' isn't a game in the Pokemon series.\n" 
+                         % Pokemon_Game_Name)
+        exit(1)
+
+def not_in_game_error(Pokemon_Name):
+    # checks if the Pokemon exists in the Game
+    not_in_game_qry = """
+    SELECT P.ID
+        FROM Pokemon P
+            JOIN Pokedex PK ON P.ID = PK.National_ID
+            JOIN Games G ON PK.Game = G.ID
+        WHERE P.Name = %s AND G.Name = %s
+    """
+    
+    # run sql
+    cur.execute(not_in_game_qry, [Pokemon_Name, Pokemon_Game_Name])
+    Pokemon_ID = cur.fetchone()
+    
+    if Pokemon_ID is None:
+        sys.stderr.write("'%s' doesn't appear in 'Pokemon %s'.\n" 
+                         % (Pokemon_Name, Pokemon_Game_Name))
+        exit(1)
+ 
+def error_checking():
+	pokemon_error(Attacking_Pokemon_Name)
+	pokemon_error(Defending_Pokemon_Name)
+	game_error()
+	not_in_game_error(Attacking_Pokemon_Name)
+	not_in_game_error(Defending_Pokemon_Name)
+	
+def damage_information() -> list[str]:
+    # grabs all the information about the moves damage
+    # information stored in each index:
+        # [0] = Move Name
+        # [1] = Move's Minimum Damage 
+        # [2] = Move's Maximum Damage
+    damage_qry = """
+    SELECT DISTINCT M.Name, 
+        (SELECT * FROM Calculate_Damage(M.Name, %s, %s, %s)) AS Minimum_Damage,
+        (SELECT * FROM Calculate_Damage(M.Name, %s, %s, %s)) AS Maximum_Damage
+        FROM Moves M 
+            JOIN Learnable_Moves LM ON M.ID = LM.Learns
+            JOIN Games G ON G.ID = LM.Learnt_In
+            JOIN Pokemon P ON P.ID = LM.Learnt_By
+        WHERE P.Name = %s AND G.Name = %s AND M.Power != 0
+        ORDER BY Maximum_Damage, Minimum_Damage, M.Name
+    """
+    
+    # run sql
+    cur.execute(damage_qry, [Attacking_Pokemon_Name, Defending_Pokemon_Name, 
+                             'Minimum', Attacking_Pokemon_Name, Defending_Pokemon_Name, 
+                             'Maximum', Attacking_Pokemon_Name, Pokemon_Game_Name])
+                             
+    return cur.fetchall()
+
+def is_zero_moves(damage_info):
+    if (damage_info == []):
+    	print("In 'Pokemon %s', '%s' can't attack '%s'." 
+    	      % (Pokemon_Game_Name, Attacking_Pokemon_Name, Defending_Pokemon_Name))
+    	exit(0)
+
+def print_damage(damage_info):
+    print("In 'Pokemon %s', When '%s' attacks '%s', '%s' can use the following moves:"
+          % (Pokemon_Game_Name, Attacking_Pokemon_Name, Defending_Pokemon_Name,
+             Attacking_Pokemon_Name))
+    print("\n")
+    
+    for move in damage_info:
+        if (move[1] != 0 and move[2] != 0):
+            print("\t'%s' for a minimum of %s damage and a maximum of %s damage to '%s'."
+                  % (move[0], move[1], move[2], Defending_Pokemon_Name))
+                   	 	   
+def main():
+    error_checking()
+    # stores all the information of the Pokemon's moves and their damages
+    damage_info = damage_information()
+    # checks if the Pokemon doesn't have any moves
+    is_zero_moves(damage_info)
+    print_damage(damage_info)
+    
+if __name__ == '__main__':
+    try:
+        db = psycopg2.connect(dbname="ass2")
+        cur = db.cursor()
+        main()
+    except psycopg2.Error as err:
+        print("DB error: ", err)
+    except Exception as err:
+        print("Internal Error: ", err)
+        raise err
+    finally:
+        if cur is not None:
+            cur.close()
+        if db is not None:
+            db.close()
+    sys.exit(0)

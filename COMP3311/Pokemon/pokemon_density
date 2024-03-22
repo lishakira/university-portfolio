@@ -1,0 +1,163 @@
+#! /usr/bin/env python3
+
+
+"""
+COMP3311
+23T1
+Assignment 2
+Pokemon Database
+
+Written by: Shakira Li z5339356
+Written on: 12 April 2023
+
+Pokemon Density
+
+Find the density of pokemon in each location within a given region.
+"""
+
+
+import sys
+import psycopg2
+import helpers
+
+
+### Constants
+USAGE = f"Usage: {sys.argv[0]} <Region>"
+
+
+### Globals
+db = None
+Region = None
+
+
+### Command-line args
+if len(sys.argv) != 2:
+    print(USAGE, file=sys.stderr)
+    sys.exit(1)
+Region = helpers.clean(sys.argv[1])
+
+def region_error():
+    # checks if the Region exists in the Pokemon series
+    region_list_qry = """
+    SELECT DISTINCT G.Region
+        FROM Games G
+    """
+    
+    cur.execute(region_list_qry)
+    region_list = []
+    for region in cur.fetchall():
+        region_list.append(region[0])
+    
+    if Region not in region_list:
+        sys.stderr.write("'%s' isn't a region in the Pokemon series.\n" % Region)
+        exit(1)
+
+def location_information() -> list[str]:
+    # grabs all Location names and location's density in the region
+    # information stored in each index:
+        # [0] = Location Name
+    location_qry = """
+    SELECT DISTINCT L.Name
+        FROM Locations L
+            JOIN Games G ON L.Appears_In = G.ID
+            JOIN Encounters E ON L.ID = E.Occurs_At
+        WHERE G.Region = %s
+        ORDER BY L.Name
+    """
+    
+    # run sql
+    cur.execute(location_qry, [Region, ])
+    
+    return cur.fetchall()
+    
+def no_encounters_information() -> list[str]:
+    # grabs each Location that doesn't have any encounters
+    # information stored in each index:
+        # [0] = Location Name
+    no_encounters_qry = """
+    SELECT DISTINCT L.Name
+        FROM Locations L
+            JOIN Games G ON L.Appears_In = G.ID
+        WHERE G.Region = %s AND L.Name NOT IN 
+		(SELECT DISTINCT L.Name
+			 FROM Locations L
+			     JOIN Games G ON L.Appears_In = G.ID
+			     JOIN Encounters E ON L.ID = E.Occurs_At
+			 WHERE G.Region = %s)
+	    ORDER BY L.Name
+    """
+    
+    # run sql
+    cur.execute(no_encounters_qry, [Region, Region])
+    
+    return cur.fetchall()
+
+def density_information(location_info) -> list[str]:
+    # grabs the Location's average density
+    density_qry = """
+    SELECT * FROM Location_Density(%s, %s)
+    """
+    
+    density_info = []
+    # information stored in each tuple's indexes
+        # [0] = Location Name
+        # [1] = Location's Density
+    for location in location_info:
+        # run sql
+        cur.execute(density_qry, [Region, location])
+        density = cur.fetchone()[0]
+        
+        density_info.append((location[0], density))
+        
+    return density_info
+    
+def print_info(density_info, no_encounters_info):
+    # prints the density information
+    print("\n")
+    print("The average density of Pokemon within each location in the '%s' region:"
+          % Region) 
+    print("\n")
+    
+    for location in density_info:
+    	print("\t%s: %s" % (location[0], location[1]))
+    
+    # prints the Locations with no Pokemon encounters
+    print("\n")
+    print("The following locations in the '%s' region have no wild Pokemon encounters:"
+          % Region)
+    print("\n")
+
+    for location in no_encounters_info:
+        print("\t%s" % location[0])
+        
+    print("\n")
+    
+def main():
+    # error checking
+    region_error()
+    
+    # collects all the information needed
+    location_info = location_information()
+    density_info = sorted(density_information(location_info), key = lambda x: x[1], 
+                          reverse = True)
+    no_encounters_info = no_encounters_information()
+    
+    # prints each Locations information in the Region
+    print_info(density_info, no_encounters_info)
+
+if __name__ == '__main__':
+    try:
+        db = psycopg2.connect(dbname="ass2")
+        cur = db.cursor()
+        main()
+    except psycopg2.Error as err:
+        print("DB error: ", err)
+    except Exception as err:
+        print("Internal Error: ", err)
+        raise err
+    finally:
+        if cur is not None:
+            cur.close()
+        if db is not None:
+            db.close()
+    sys.exit(0)

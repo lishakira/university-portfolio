@@ -1,0 +1,172 @@
+#! /usr/bin/env python3
+
+
+"""
+COMP3311
+23T1
+Assignment 2
+Pokemon Database
+
+Written by: Shakira Li z5339356
+Written on: 12 April 2023
+
+Encounter Summary
+
+Print a summary of all the Pokemon that can be encountered at a given location in a given game
+"""
+
+
+import sys
+import psycopg2
+import helpers
+
+
+### Constants
+USAGE = f"Usage: {sys.argv[0]} <Location> <Game>"
+
+
+### Globals
+db = None
+Location = None
+Game = None
+
+
+### Command-line args
+if len(sys.argv) != 3:
+    print(USAGE, file=sys.stderr)
+    sys.exit(1)
+Location = helpers.clean(sys.argv[1])
+Game     = helpers.clean(sys.argv[2])
+
+### Helper functions  
+def location_error():
+	# checks if the Location exists in the Pokemon series
+    location_qry = """
+    SELECT L.ID
+        FROM Locations L
+        WHERE L.Name = %s
+    """
+    
+    # run sql
+    cur.execute(location_qry, [Location, ])
+    Location_ID = cur.fetchone()
+    
+    if Location_ID is None:
+        sys.stderr.write("'%s' isn't a location in the Pokemon series.\n" % Location)
+        exit(1)
+
+def game_error():
+    # checks if the Game exists in the Pokemon series
+    games_qry = """
+    SELECT G.ID
+        FROM Games G
+        WHERE G.Name = %s
+    """
+    
+    # run sql
+    cur.execute(games_qry, [Game, ])
+    Games_ID = cur.fetchone()
+     
+    if Games_ID is None:
+        sys.stderr.write("'Pokemon %s' isn't a game in the Pokemon series.\n" % Game)
+        exit(1)
+
+def not_in_game_error():
+    # checks if the Location exists in the Game
+    not_in_game_qry = """
+    SELECT G.ID
+        FROM Games G
+            JOIN Locations L ON G.ID = L.Appears_In
+        WHERE L.Name = %s AND G.Name = %s
+    """
+    
+    # run sql
+    cur.execute(not_in_game_qry, [Location, Game])
+    Games_ID = cur.fetchone()
+    
+    if Games_ID is None:
+        sys.stderr.write("'%s' isn't in 'Pokemon %s'.\n" % (Location, Game))
+        exit(1)
+             
+def error_checking():
+    location_error()
+    game_error()
+    not_in_game_error()    
+    
+def encounters_information() -> list[str]:
+    # grabs all the information of all Encounters
+    # information stored in each index:
+        # [0] = Encounter ID
+        # [1] = Pokemon Name
+        # [2] = Pokemon_Type/s
+        # [3] = Encounter Rarity
+        # [4] = Pokemon Encounter Minimum Level
+        # [5] = Pokemon Encounter Maximum Level
+        # [6] = Pokemon Egg Groups
+        # [7] = Pokemon Abilities
+        # [8] = Pokemon Encounter Requirements
+    encounters_qry = """
+    SELECT DISTINCT E.ID, P.Name, (SELECT * FROM Find_Types(P.Name, '/')), E.Rarity, 
+           (E.Levels).Min, (E.Levels).Max, 
+           (SELECT * FROM Find_Egg_Groups(P.Name)) AS Egg_Groups, 
+           (SELECT * FROM Find_Abilities(P.Name)) AS Abilities,
+           (SELECT * FROM Find_Requirements(E.ID, %s, %s)) AS Requirements
+        FROM Pokemon P
+            JOIN Encounters E ON P.ID = E.Occurs_With
+            JOIN Locations L ON E.Occurs_At = L.ID
+            JOIN Games G ON L.Appears_In = G.ID
+            JOIN Encounter_Requirements ER ON E.ID = ER.Encounter
+            JOIN Requirements R ON ER.Requirement = R.ID
+        WHERE L.Name = %s AND G.Name = %s
+        ORDER BY E.Rarity DESC, P.Name, (E.Levels).Max, Requirements
+    """
+    
+    # run sql
+    cur.execute(encounters_qry, [Location, Game, Location, Game])
+    
+    return cur.fetchall()
+
+def print_encounters(encounters_info):
+    print("In 'Pokemon %s' at '%s' the following Pokemon can be Encountered:"
+          % (Game, Location))
+    
+    for encounter in encounters_info:
+        print("\n")
+        print("\t%s:" % encounter[1])
+        print("\t\tType: %s" % encounter[2])
+        print("\t\tRarity: %s%%" % encounter[3])
+        print("\t\tLevels: min %s, max %s" % (encounter[4], encounter[5]))
+        
+        if encounter[5] != '':
+            print("\t\tEgg Groups: %s" % encounter[6])
+            
+        if encounter[6] != '':
+            print("\t\tAbilities: %s" % encounter[7])
+        
+        print("\t\tEncounter Requirements:")
+        print("\t\t\t%s" % encounter[8])
+    
+    print("\n")
+    
+def main():
+    error_checking()
+    # stores all the information of all Encounters
+    encounters_info = encounters_information()
+    # prints the information of all Encounters
+    print_encounters(encounters_info)
+    
+
+if __name__ == '__main__':
+    try:
+        db = psycopg2.connect(dbname="ass2")
+        cur = db.cursor()
+        main()
+    except psycopg2.Error as err:
+        print("DB error: ", err)
+    except Exception as err:
+        print("Internal Error: ", err)
+        raise err
+    finally:
+        if db is not None:
+            db.close()
+    sys.exit(0)
