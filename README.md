@@ -13,9 +13,7 @@ Lab Exercises (Week 01 - 05, 07 - 10) <br/>
 Assignments (1 and 2)
 
 ## COMP1531: Software Engineering Fundamentals
-### Language
-Lab Exercises (Week 01 - 05) <br/>
-Project (Backend)
+under construction
 
 ## COMP2041: Software Construction
 ### C and Dash Languages
