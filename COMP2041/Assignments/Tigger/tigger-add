@@ -1,0 +1,53 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+index="index"
+
+# checks if the .tigger repository exists
+if [ ! -d "$repository" ]
+then
+    echo "tigger-add: error: tigger repository directory .tigger not found"
+    exit 1
+
+# checks if there is a file or files given
+elif [ $# -eq 0 ]
+then
+    echo "usage: tigger-add <filenames>"
+
+else
+    for file in "$@"
+    do
+        # checks if the file exists in working directory
+        if [ -f "$file" ]
+        then
+            # checks if the file name starts with alphanumeric characters
+            # and only contains alphanumeric characters including '.', '-', and '_'
+            # 2>/dev/null to get rid of error: "tr: range-endpoints of '_-]' are in reverse collating sequence order"
+            if [ ! -z "$(echo "$file" | grep "^[a-zA-Z0-9].*")" ] && [ -z "$(echo "$file" | tr -d "a-zA-Z0-9._-" 2>/dev/null)" ] 
+            then
+                cp "$file" -t "$repository"/"$index"
+
+            else
+                echo "tigger-add: error: invalid filename '$file'"
+                exit 1
+            fi
+
+        elif [ ! -f "$file" ] && [ -f "$repository"/"$index"/"$file" ] 
+        then 
+            rm "$repository"/"$index"/"$file"
+
+        else
+            echo "tigger-add: error: can not open '$file'"
+            exit 1
+        fi
+    done
+fi

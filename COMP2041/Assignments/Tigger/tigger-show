@@ -1,0 +1,55 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+index="index"
+commit="commit"
+commit_num=$(echo "$1" | cut -d ':' -f1)
+file=$(echo "$1" | cut -d ':' -f2)
+
+# checks if the command is missing an argument
+if [ $# -ne 1 ]
+then
+    echo "usage: tigger-show <commit>:<filename>"
+
+# checks if the file given is valid
+elif [ -z "$file" ]
+then 
+    echo "tigger-show: error: invalid filename '$file'"
+    exit 1
+
+# checks if there is commit number given
+elif [ -z "$commit_num" ] 
+then
+    # checks if the file exists in index
+    if [ ! -f "$repository"/"$index"/"$file" ]
+    then
+        echo "tigger-show: error: '$file' not found in index"
+        exit 1
+    else
+        cat "$repository"/"$index"/"$file"
+    fi
+
+else
+    # checks if the commit given exists
+    if [ ! -d "$repository"/"$commit"/commit."$commit_num" ] 
+    then
+        echo "tigger-show: error: unknown commit '$commit_num'"
+
+    # checks if the file exists in the given commit
+    elif [ ! -f "$repository"/"$commit"/commit."$commit_num"/"$file" ]
+    then 
+        echo "tigger-show: error: '$file' not found in commit $commit_num"
+
+    else
+        cat "$repository"/"$commit"/commit."$commit_num"/"$file"
+    fi
+fi

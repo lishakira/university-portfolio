@@ -1,0 +1,130 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+index="index"
+commit="commit"
+false=0
+true=1
+commit_file="$false"
+num_commits=$(wc -l < "$repository"/"$commit"/commit-messages.txt)
+message="$2"
+
+# checks if number of arguments given is correct
+if [ $# -ne 2 ] && [ $# -ne 3 ]
+then
+    echo "usage: tigger-commit [-a] -m commit-message"
+
+# checks if command is correct for 'tigger-commit -m [message]'
+elif [ $# -eq 2 ] && [ "$1" != "-m"  ]
+then
+    echo "usage: tigger-commit [-a] -m commit-message"
+
+# checks if command is correct for 'tigger-commit -a -m [message]'
+elif [ $# -eq 3 ] && [ "$1" = "-a" ] && [ "$2" != "-m" ]
+then
+    echo "usage: tigger-commit [-a] -m commit-message"
+
+else
+    # copies all files from current directory into index
+    # only if the files already exist in the index
+    if [ "$1" = "-a" ]
+    then    
+        for file in *
+        do
+            # checks if the file exists in the index
+            # and is not a directory
+            if [ -f "$repository"/"$index"/"$file" ]
+            then
+                cp "$file" -t "$repository"/"$index"
+            fi
+        done
+    fi
+    
+    #checks if there are files not in index
+    for file in "$repository"/*
+    do
+        file_check=$(echo "$file" | cut -d '/' -f2)
+        # deletes file from repository if it does not exist in index
+        if [ ! -f "$repository"/"$index"/"$file_check" ] && [ ! -d "$file" ]
+        then 
+            commit_file="$true"
+            rm "$file"
+        fi
+    done
+
+    # checks if there are files to commit in index
+    for file in "$repository"/"$index"/*
+    do
+        file_check=$(echo "$file" | cut -d '/' -f3)
+
+        # copies file into repository if it does not exist yet
+        if [ ! -f "$repository"/"$file_check" ]
+        then
+            commit_file="$true"
+
+            # creates a backup file in case the user wishes to view it again
+            if [ ! -d "$repository"/"$commit"/commit."$num_commits" ]
+            then
+                mkdir "$repository"/"$commit"/commit."$num_commits"
+            fi
+
+            if [ "$num_commits" -gt 0 ]
+            then
+                previous_commit=$(( num_commits - 1 ))
+                for previous_file in "$repository"/"$commit"/commit."$previous_commit"/*
+                do
+                    if [ -f "$repository"/"$index"/"$previous_file" ]
+                    then
+                        cp "$previous_file" -t "$repository"/"$commit"/commit."$num_commits"
+                    fi
+                done
+            fi
+
+            cp "$file" -t "$repository"/"$commit"/commit."$num_commits"
+            cp "$file" -t "$repository"
+
+        else
+            # copies file into a directory if it does exist but has been edited
+            if ! cmp -s "$file" "$repository"/"$file_check" 
+            then
+                commit_file="$true"
+
+                # creates a backup file in case the user wishes to view it again
+                if [ ! -d "$repository"/"$commit"/commit."$num_commits" ]
+                then
+                    mkdir "$repository"/"$commit"/commit."$num_commits"
+                fi
+
+                if [ "$num_commits" -gt 0 ]
+                then
+                    previous_commit=$(( num_commits - 1 ))
+                    for previous_file in "$repository"/"$commit"/commit."$previous_commit"/*
+                    do
+                        cp "$previous_file" -t "$repository"/"$commit"/commit."$num_commits"
+                    done
+                fi
+
+                cp "$file" -t "$repository"/"$commit"/commit."$num_commits"
+                cp "$file" -t "$repository"
+            fi
+        fi
+    done
+
+    if [ $commit_file -eq $false ]
+    then
+        echo "nothing to commit"
+
+    else
+        echo "$num_commits $message" >> "$repository"/"$commit"/commit-messages.txt
+        echo "Committed as commit $num_commits"
+    fi
+fi

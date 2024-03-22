@@ -1,0 +1,52 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+index="index"
+
+if [ "$1" = "--cached" ]
+then
+    for file in "$@"
+    do
+        if [ "$file" != "--cached" ]
+        then 
+            if [ ! -f "$repository"/"$index"/"$file" ]
+            then
+                echo "tigger-rm: error: '$file' is not in the tigger repository"
+                exit 1
+            
+            elif ! cmp "$file" "$repository"/"$index"/"$file" 
+            then
+                echo "tigger-rm: error: 'a' has staged changes in the index"
+            else
+                rm "$repository"/"$index"/"$file"
+            fi
+        fi
+    done
+
+elif [ $# -eq 0 ]
+then
+    echo "usage: tigger-rm [--force] [--cached] <filenames>"
+
+else 
+    for file in "$@"
+    do
+        if [ ! -f "$repository"/"$index"/"$file" ]
+        then
+            echo "tigger-rm: error: '$file' is not in the tigger repository"
+            exit 1
+        
+        else
+            rm "$repository"/"$file"
+            rm "$repository"/"$index"/"$file"
+        fi
+    done
+fi

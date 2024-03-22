@@ -1,0 +1,33 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+index="index"
+commit="commit"
+
+# checks if there are unnecessary arguments included
+if [ $# -gt 0 ]
+then
+    echo "usage: tigger-init"
+
+# checks if the .tigger repository exists
+elif [ -d "$repository" ]
+then
+    echo "tigger-init: error: .tigger already exists"
+    exit 1
+
+else
+    mkdir $repository
+    mkdir $repository/$index
+    mkdir $repository/$commit
+    touch $repository/$commit/commit-messages.txt
+    echo "Initialized empty tigger repository in .tigger"
+fi

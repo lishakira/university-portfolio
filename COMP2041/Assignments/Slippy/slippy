@@ -1,0 +1,306 @@
+#!/usr/bin/env python3
+#
+# Assignment 2: Slippy
+#
+# POSIX-compatible subset of sed with extended regular expressions (EREs)
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 12/08/2022
+#
+
+import sys, re
+
+command = sys.argv[1]
+multiple_command = re.split(';|\n', command)
+if len(multiple_command) > 1:  
+    print(multiple_command)
+
+############## 
+#   SLIPPY   #
+##############
+def main():
+    if len(sys.argv) == 1:
+        error_usage()
+
+    elif len(sys.argv) == 2:
+        command = sys.argv[1]
+        multiple_command = re.split(';|\n', command)
+        num_commands = len(multiple_command)
+        if num_commands > 1:  
+            for i in range(num_commands):
+                command_letter = multiple_command[i][-1]
+                address = multiple_command[i][:-1]
+                run_command(command_letter, address)
+        
+        run_command(command_letter, address)
+        error_usage()
+
+    # for -n command line option
+    elif len(sys.argv) == 3 and sys.argv[1] == '-n':
+        # for command s
+        command = sys.argv[2]
+        # for commands q, p, d
+        command_letter = command[-1]
+        address = command[:-1]
+        
+        if command_letter == 'p':
+            command_n_p(address)
+            sys.exit(0)
+        elif command_letter == 'd' or command_letter == 'q' or re.search(r'/?.*?/?s/.*/.*/[g]', command):
+            sys.exit(0)
+        else:
+            error_invalid_command()
+
+    else:
+        print("slippy: error")
+
+def run_command(command_letter, address):
+    # for commands q, p, and d
+    # checks if the address is valid
+    if address == '' or address.isdigit() or re.search(r'/.*/', address):
+        # checks if the address is a positive integer (if it applies)
+        positive_address(address)
+
+        # checks which command is being executed and
+        # executes the program function for that specific command
+        if command_letter == 'q':
+            command_q(address)
+            sys.exit(0)
+        elif command_letter == 'p':
+            command_p(address)
+            sys.exit(0)
+        elif command_letter == 'd':
+            command_d(address)
+            sys.exit(0)
+
+    # for command s
+    if re.search(r'/?.*?/?s\S.*\S.*\S.*', command):
+        command = sys.argv[1].split('s')
+        substitute = command[1]
+        address = command[0]
+
+        command_s(address, substitute)
+        sys.exit(0)
+    
+    # for other command letters
+    else:
+        error_invalid_command()
+
+#################
+#   SUBSET 0    #
+#################
+# QUIT COMMAND: q
+def command_q(address):
+    if address == '' or address.isdigit():
+        # if there is no address, it is set to default [address = 1]
+        if address == '':
+            address = '1'
+
+        # exits after n times [n = address]
+        for occurrence, line in enumerate(sys.stdin):
+            if occurrence == int(address): 
+                sys.exit(0)
+            print_line(line)
+
+    elif re.search(r'/.*/', address):
+        pattern = find_pattern(address)
+        # exits after the first line that matches the pattern
+        for line in sys.stdin:
+            print_line(line)
+            if re.search(pattern, line): 
+                sys.exit(0)
+
+    else:
+        error_invalid_command()
+
+# PRINT COMMAND: p
+def command_p(address):
+    if address == '':
+        # prints every line twice
+        for line in sys.stdin:
+            for i in range(2): 
+                print_line(line)
+
+    elif address.isdigit():
+        # prints the n line twice [n = command number]
+        for occurrence, line in enumerate(sys.stdin):
+            print_line(line)
+            if occurrence == (int(address) - 1): 
+                print_line(line)
+
+    elif re.search(r'/.*/', address):
+        pattern = find_pattern(address)
+        # prints every line that macthes the pattern twice
+        for line in sys.stdin:
+            print_line(line)
+            if re.search(pattern, line): 
+                print_line(line)
+
+    else:
+        error_invalid_command()
+
+# COMMAND DELETE: d
+def command_d(address):
+    if address == '':
+        # deletes every line, i.e. no output
+        sys.exit(0)
+
+    elif address.isdigit():
+        # deletes the n line [n = command number]
+        for occurrence, line in enumerate(sys.stdin):
+            if occurrence != int(address) - 1: 
+                print_line(line)
+
+    elif re.search(r'/.*/', address):
+        pattern = find_pattern(address)
+        # deletes every line that macthes the pattern, 
+        # i.e. does not produce output for the line
+        for line in sys.stdin:
+            if not re.search(pattern, line): 
+                print_line(line)
+
+    else:
+        error_invalid_command()
+
+#################
+#   SUBSET 1    #
+#################
+# COMMAND_SUBSTITUTE: s
+def command_s(address, substitute):
+    if not is_sub_command(substitute):
+        error_invalid_command()
+
+    delimeter = substitute[1]
+    address_pattern = find_address_pattern(address)
+    sub_pattern = substitute.split(delimeter)[1]
+
+    if address.isdigit() and sub_pattern != '':
+        # checks if the address is a positive integer
+        positive_address(address)
+        for occurrence, line in enumerate(sys.stdin):
+            # consider substituting the nth line only [n = address]
+            if occurrence == int(address) -1:
+                line = replace_line(line, substitute)
+            print_line(line)
+
+    elif address_pattern != '' and sub_pattern != '':
+        for line in sys.stdin:
+            # consider substituting the lines that match the address pattern only
+            if re.search(address_pattern, line):
+                line = replace_line(line, substitute)
+            print_line(line)
+
+    elif sub_pattern != '':
+        for line in sys.stdin:
+            # consider substituting every line
+            line = replace_line(line, substitute)
+            print_line(line)
+
+    else:
+        error_invalid_command()
+
+# -n COMMAND LINE OPTION: -n p
+def command_n_p(address):
+    if address == '':
+        # prints every line
+        for line in sys.stdin:
+            print_line(line)
+
+    elif address.isdigit():
+        # does not print any line except line n [n = address]
+        for occurrence, line in enumerate(sys.stdin):
+            if occurrence == int(address) - 1:
+                print_line(line)
+
+    elif re.search(r'/.*/', address):
+        pattern = find_pattern(address)
+        # prints every line that matches the pattern
+        for line in sys.stdin:
+            if re.search(pattern, line):
+                print_line(line)
+
+    else:
+        error_invalid_command()
+
+#########################
+#   HELPER FUNCTIONS    #
+#########################
+# SUBSET 0
+#################################################################
+# checks if the address is a positive integer (if it applies)
+def positive_address(address):
+    if not address.lstrip('-').isdigit():
+        return
+
+    if int(address) < 0:
+        error_usage()
+    elif int(address) == 0:
+        error_invalid_command()
+
+# returns the pattern from the address given
+# for commands q, p, d
+def find_pattern(address):
+    pattern = re.sub(r'/', '', address)
+    if pattern == '':
+        error_invalid_command()
+    
+    return pattern
+
+# returns the pattern from the address given
+# for command s
+def find_address_pattern(address):
+    address_pattern = re.sub(r'/', '', address)
+    if address != '' and address_pattern == '':
+        error_invalid_command()
+    
+    return address_pattern
+
+# executes the re.sub function 
+# for command s
+def replace_line(line, substitute):
+    delimeter = substitute[0]
+    sub_pattern = substitute.split(delimeter)[1]
+    sub_replacement = substitute.split(delimeter)[2]
+    sub_global = substitute.split(delimeter)[3]
+
+    if sub_global == 'g':
+        # substitute every occurrence of the pattern in every line
+        return re.sub(sub_pattern, sub_replacement, line)
+    elif sub_global == '':
+        # substitute the first occurrence of the pattern in every line
+        return re.sub(sub_pattern, sub_replacement, line, 1)
+
+# SUBSET 1
+#################################################################
+def is_sub_command(substitute):
+    delimeter = substitute[0]
+    count_delimeter = 0
+    for char in substitute:
+        if char == delimeter:
+            count_delimeter += 1
+    
+    return True if count_delimeter == 3 else False
+
+# GENERAL
+#################################################################
+# executes the print command and ignores the newline character of the line
+def print_line(line):
+    print(line, end='')
+
+##############
+#   ERRORS   #
+##############
+def error_usage():
+    print(f"usage: {sys.argv[0]} [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]", file = sys.stderr)
+    sys.exit(1)
+
+def error_invalid_command():
+    print(f"{sys.argv[0]}: command line: invalid command", file = sys.stderr)
+    sys.exit(1)
+
+#####################
+#   RUNS PROGRAM    #
+#####################
+# if __name__ == "__main__":
+#     main()

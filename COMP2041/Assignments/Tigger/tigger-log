@@ -1,0 +1,16 @@
+#!/bin/dash
+#
+# Assignment 1: Tigger
+#
+# Subsystem of git implementation
+#
+# Author: Shakira Li (z5339356@unsw.edu.au)
+#
+# Written: 07/2022
+#
+
+repository=".tigger"
+commit="commit"
+
+# prints in reverse
+tac "$repository"/"$commit"/commit-messages.txt
