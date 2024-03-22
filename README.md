@@ -31,7 +31,7 @@ Lab Exercises (Week 01 - 05, 07 - 08) <br/>
 Assignments (1 and 2)
 
 ## COMP3231: Operating Systems
-Assignments (0, 1, 2, and 3)
+under construction
 
 ## COMP3311: Database Systems
 ### SQL and Python Language
@@ -58,12 +58,13 @@ Reflective Writing Task <br/>
 Sustainability Posters
 
 ## DESN2000: Engineering Design 2
+under construction
 
 ## SENG2011: Program Reasoning Workshop
 Assignments (1 and 2)
 
 ## SENG2021: Requirements and Design Workshop
-E-invoicing Project
+under construction
 
 # Copyright 
 As these are projects done for the completion of UNSW courses, they are thereby protected by the plagiarism policies of UNSW.
