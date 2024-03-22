@@ -1,0 +1,16 @@
+// drawing a smiley face
+// Written on 15/09/2021
+// by Shakira Li (z5339356@unsw.edu.au)
+// for COMP1511
+
+#include <stdio.h>
+
+int main(void) {
+
+    printf("~ ~\n");
+    printf("0 0\n");
+    printf(" o\n");
+    printf("\\_/\n");
+
+    return 0;
+}
