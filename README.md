@@ -8,7 +8,7 @@ Lab Exercises (Week 01 - 05, 07 - 09) </br>
 Assignments (1 and 2)
 
 ## COMP1521: Computer Systems Fundamentals
-### C and MIPSY Languages
+### MIPSY and C Languages
 Lab Exercises (Week 01 - 05, 07 - 10) <br/>
 Assignments (1 and 2)
 
@@ -34,7 +34,7 @@ Assignments (1 and 2)
 Assignments (0, 1, 2, and 3)
 
 ## COMP3311: Database Systems
-### SQL Language
+### SQL and Python Language
 Assignments (1 and 2)
 
 ## COMP6080: Web Front-end Programming
