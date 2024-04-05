@@ -22,6 +22,7 @@ Assignments (1 and 2)
 
 ## COMP2511: Object-oriented Design and Programming
 ### Java Language
+[under construction]
 Lab Exercises (Week 01 - 05, 07 - 08) <br/>
 Assignments (1 and 2)
 
