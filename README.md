@@ -17,7 +17,7 @@ under construction
 
 ## COMP2041: Software Construction
 ### Dash and C Languages
-Lab Exercises (Week 01 - 05, 07 - 10) <br/>
+Lab Exercises (Week 01 - 05, 07 - 10) [under construction] <br/>
 Assignments (1 and 2)
 
 ## COMP2511: Object-oriented Design and Programming
@@ -40,9 +40,11 @@ Assignments (1 and 2)
 ## COMP6080: Web Front-end Programming
 ### JavaScript, HTML, and CSS Languages
 ### React.js, Node.js, Bootstrap, and Material UI Libraries
+[under construction]
 Assignments (1, 2, and 3)
 
 ## COMP6841: Extended Security Engineering
+[under construction]
 Case Analyses (Week 01 - 05, 07 - 09) <br/>
 Blogs (Week 01 - 05, 07 - 09) <br/>
 Challenge Activities (Week 01 - 05, 07 - 09) <br/>
