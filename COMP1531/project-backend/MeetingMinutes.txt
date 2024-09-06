@@ -1,0 +1,202 @@
+
+Meeting 8 of June 1:27 pm
+Attendence: Everyone (4)
+
+Meeting 1:
+
+Discussions regarding iteration zero.
+
+Main object: Distribution of the key functions.
+One function already created, therefore, need to split up with 2 each
+
+Discussions about how each function needs a seperate merge request before being added to main.
+
+
+Tutorial, Brainstorm
+
+Good:
+Communication
+Engaging
+
+
+Poor:
+Cannot be reached
+No Communication
+Untrustworthy
+
+
+Distant:
+Try to contact them.
+Allow to be easy to talk to (Be approachable, friendly). 
+Communicate with tutorial instructor
+
+Ask why they were away.
+Ask how the group can help them.
+
+Reassign remaing group tasks 
+
+
+Meeting 2 (15/6):
+Some functions are more important than others since they 
+are dependencies of other functions
+
+authLoginV1         - Jo
+authRegisterV1      - James (priority since other functions are depending on it)
+channelsCreateV1    - Jo
+channelsListV1      - Alex
+channelsInstallV1   - Alex
+channelDetailsV1    - Shakira
+channelJoinV1       - Shakira
+channelInviteV1     - Jo
+channelMessagesV1   - Falco
+userProfileV1       - Falco
+clearV1             - James (priority since other functions are depending on it)
+
+Due date for all functions will be Wednesday (22/6)
+
+Updated user data in dataStore.js and added a new element in the
+user data object named enrolledChannels that is an array of classes
+the user is enrolled in.
+
+Variable names will be using camelCase
+
+
+Meeting 3 
+Date: 22 June 2022 
+Time: 1:36PM - 1:50PM
+Attendance: Everyone (4)
+
+Tasks were doable, however, it took some time since there were
+other commitments and some of the weekly labs were challenging.
+
+Communication can be improved in the future. If the task is challenging,
+it is ideal to ask for help.
+
+Issue: Some functions are needed for other functions.
+Resolution: Moving forward, it would be better to set different 
+deadlines for different functions. Moreover, this will give time for other 
+commitments.
+
+Alex is now considered not part of the group; thus, James took the 
+initiative to do his tasks insteas.
+
+Standup videos will be done by this week. This includes the tasks
+being done, the challenging parts, and the improvements needed.
+
+<<<<<<< HEAD
+//Meeting 4//
+Date: Wednesday 29 June:
+Time: 1:33PM
+Attendance: Everyone (4) yay!!
+
+Discussing iteration2 & iteration1 presentation structure
+
+Things to do/note for iteration 2:
+- Adapt all the files to typescript
+- Saving data that we create each time we run to the server to a file (clear
+the file before running again so it doesn't trigger errors/duplicates)
+
+task allocations:
+
+priority functions (functions tht lead to other functions):
+- authRegisterV1 (priority) - done
+- clear (priority) - done
+- channelsCreate 
+- dm/create/v1
+=======
+
+//Meeting 4//
+Day/Date: Wednesday, 29 June 2022
+Time: 1:33PM - 1:53PM
+Attendance: Everyone yay!
+
+Discussed task allocations for iteration2 and presentation strategy for iteration1
+
+issues:
+need clarifications on new test files format
+
+it2 task allocations:
+
+priority functions (other functions depend on these):
+authRegisterV1 (priority) - done
+clear (priority) - done
+channelsCreate
+dmCreate 
+
+>>>>>>> origin/master
+
+James:
+authLoginV1
+authRegisterV1 (priority)
+clear (priority)
+message/send/v1
+message/edit/v1
+message/remove/v1
+auth/logout/v1
+
+Jo:
+ChannelsCreate (priority)
+channels/list/v2
+channels/listall/v2
+channel/details/v2
+channel/join/v2
+channel/invite/v2
+channel/messages/v2
+
+Falco:
+dm/create/v1
+dm/list/v1
+dm/remove/v1
+dm/details/v1
+dm/leave/v1
+dm/messages/v1
+message/senddm/v1
+
+Shakira:
+user/profile/v2
+users/all/v1
+user/profile/setname/v1
+user/profile/setemail/v1
+user/profile/sethandle/v1
+channel/addowner/v1
+channel/removeowner/v1
+
+not assigned yet:
+channel/leave/v1
+
+<<<<<<< HEAD
+- meetings during flex week
+8pm Monday & Wednesday
+    - notes: function show & tell on Wednesday  
+=======
+need meeting for w6:
+- 8pm Monday and Wednesday 
+    (on Wednesday: functions show & tell!)
+>>>>>>> origin/master
+
+Week 08
+Date: 20 July 2022 
+Time: 01:42PM - 02:00PM
+Attendance: 
+    Present: Shakira, James, Anton, Jovanka
+    Absent: Falco (reasoning: has work)
+
+Minutes:
+- changing from return eror to throwing error
+    - not all functions
+
+- lots of written work that needs to be done (refer to Iteration 3 5.6)
+    - involves writing a survey
+    - planning for the next problem to solve
+    - most difficult part would be convincing people to talk
+    - Anton has volunteered to do the interview
+
+- functions that require more attention
+    - secure sessions
+    - passwords (auth/passwordreset/request/v1 and auth/passwordreset/v1)
+    - uploading images (user/profile/uploadphoto/v1)
+    - NOTE: whoever takes these will be given less workload
+
+- must go on failed tests on Iteration 2 to understand what and why we failed
+
+- next progress check-in: Wednesday W9 before class
