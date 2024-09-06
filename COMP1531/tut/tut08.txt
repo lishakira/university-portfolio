@@ -1,0 +1,37 @@
+20 July 2022
+
+GOOD SOFTWARE
+
+bubblesort() algorithm
+
+function bubblesort(array: any[]) {
+    const newArray = [...array];
+    for (let i = 0; i < newArray.length - 1; i++) {
+        for let( j = 0; j < newArray.length - i - 1; j++) {
+            if (newArray[j].age > newArray[j + 1].age) {
+                // current person older than next person, swap them
+                const temp = newArray[j];
+                newArray[j] = newArray[j + 1];
+                newArray[j + 1] = temp;
+            } else if (newArray[j].age === newArray[j + 1].age && 
+                       newArray[j].name.localCompare(newArray[j + 1].name)) {
+                // equal age, swap for lexiographical-order names
+                const temp = newArray[j];
+                newArray[j] = newArray[j + 1];
+                newArray[j + 1] = temp;
+            }
+        }
+    }
+
+    return newArray
+}
+
+Issues:
+1. create a function for repeated codes
+    const temp = newArray[j];
+    newArray[j] = newArray[j + 1];
+    newArray[j + 1] = temp;
+
+2. not reusable nor extensible
+    - can't be called anywhere else in the program
+    - has to rewrite the object for other programs

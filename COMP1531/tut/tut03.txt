@@ -1,0 +1,30 @@
+/**
+ * 15 June 2022
+ * 
+ * console.log(`message: $[function(h)]`)
+ *
+ * import { pretty } from './pretty.js';
+ * 
+ * test('pretty(0000) => 12:00 am', () => {
+ *      expect(pretty(0000).toEqual('12:00 am'))
+ *      // toEqual !== toBe 
+ * 
+ * });
+ * 
+ * describe('pretty', () => {
+ *      test.each([{
+ *          {input: '23:59', output: '11:59 pm'},
+ *          {},
+ *      }])
+ * });
+ * 
+ * describe('Example block of tests', () => {
+  test('Example test 1', () => {
+    expect(checkPassword('something')).toEqual('Poor Password');
+  });
+
+  test('Example test 2', () => {
+    expect(checkPassword('not a good test')).toEqual('Poor Password');
+  });
+});
+*/

@@ -1,0 +1,17 @@
+13 July 2022
+
+DRY & KISS Principles
+    DRY = don't repeat yourself
+    KISS = keep it simple stupid
+
+array.reduce((accumulator, current value), 0)
+    current value = changes depending on the element in the array
+    0 = initial accumulator value
+
+    Example:
+    const prod = (numbers: number[]) => numbers.reduce((accumulator: number, currentVal: number)
+    => accumulator * currentVal, 1)
+
+slice
+    (start, stop)
+    (start) => goes until the very end

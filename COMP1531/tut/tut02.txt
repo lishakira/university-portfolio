@@ -1,0 +1,39 @@
+ /*
+ 08 June 2022
+
+ 1. == -> ===
+ 2. != -> !==
+
+ Examples: 
+    const result = [];
+    array.push(element); // inserts the element into the array
+
+ Ternary operator: one line if statement
+    condition ? return if true : return if false
+
+ Example:
+    if (total === 0) {
+        return null;
+    }
+
+    return total/posCount;
+
+    BECOMES
+
+    total > 0 ? total/posCount : null
+
+ Branches:
+    1. git checkout -b [Branch Name] = creates a new branch
+    2. git checkout [Branch Name] = enters the said branch
+    3. git branch = shows all the branches
+    4. git status = shows which branch is being used
+    5. git push --set-upstream origin [File] = to push the file into the 
+    6. git merge main = takes the master and merges it with the current branch
+
+ Element for element in array: duplicates the array list
+    list = [1, 2, 3, 4, 5];
+
+    list2 = [element for element in list element % 2 === 0];
+    list2 = [for (x of list) if (x % 2 === 0) ]
+
+ */

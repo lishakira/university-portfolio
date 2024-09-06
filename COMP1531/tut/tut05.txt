@@ -1,0 +1,9 @@
+29 June 2022
+
+const findNameAge = (name: string): NameAge | undefined =>
+namesAges.find(nameAge => nameAge.name === name);
+    - finds the first element of the variable;
+    - otherwise, "undefined"
+
+req = request
+res = response
