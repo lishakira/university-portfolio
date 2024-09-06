@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Slackr</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap reference: https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <!-- My files -->
+  <link rel="stylesheet" type="text/css" media="screen" href="styles/provided.css" />
+  <script type="module" src="src/helpers.js"></script>
+</head>
+
+<body>
+  <header>
+    <!-- Navigation Bar -->
+    <!-- Reference: https://getbootstrap.com/docs/5.3/components/navbar/#supported-content -->
+    <nav id="nav-bar" class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" name="redirect-link">
+          <img src="assets/panda-icon-logo.png" alt="logo" class="d-inline-block align-text-top" width="30" height="24">
+          Slackr
+        </a>
+
+        <!-- for mobile media -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="toggle-navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar-content">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+          <!-- non-authenticated display -->
+          <ul id="navbar-not-authed" class="navbar-nav mb-2 mb-lg-0 navbar-right">
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary me-2" name="redirect-link" redirect-to="register">Register</button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="btn btn-outline-primary me-2" name="redirect-link" redirect-to="login">Login</button>
+            </li>
+          </ul>
+          <!-- authenticated display -->
+          <ul id="navbar-authed" class="navbar-nav mb-2 mb-lg-0 navbar-right">
+            <li class="nav-item">
+              <button type="button" id="pinned-messages-button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#message-pin" hidden>Pinned Messages</button>
+            </li>
+            <li class="nav-item">
+              <button type="button" id="logout-submit" class="btn btn-primary me-2" name="redirect-link" redirect-to="dashboard">Logout</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main role="main">
+    <!-- Dashboard -->
+    <div id="page-dashboard"></div>
+
+    <!-- Register Form -->
+    <!-- Reference: https://getbootstrap.com/docs/5.3/forms/overview/ -->
+    <div id="page-register">
+      <h2 class="auth-form-label">Register</h2>
+      <form id="form-register" name="auth-form">
+        <div class="form-group mb-4">
+          <label>Name</label>
+          <input type="text"
+                 id="register-name"
+                 placeholder="Hayden Slackr"
+                 required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label>Email Address</label>
+          <input type="email"
+                 id="register-email"
+                 placeholder="sample@gmail.com"
+                 autocomplete="off"
+                 required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label>Password</label>
+          <input type="password"
+                 id="register-password"
+                 placeholder="************"
+                 autocomplete="new-password"
+                 required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label>Confirm Password</label>
+          <input type="password"
+                 id="register-confirm-password"
+                 placeholder="************"
+                 autocomplete="new-password"
+                 required>
+        </div>
+
+        <div class="vstack gap-2">
+          <button type="submit" id="register-submit" class="btn btn-primary col-md-3">Register</button>
+        <a href="#" class="auth-link" name="redirect-link" redirect-to="login">Already have an account? Click here to log in.</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Login Form -->
+    <!-- Reference: https://getbootstrap.com/docs/5.3/forms/overview/ -->
+    <div id="page-login">
+      <h2 class="auth-form-label">Login</h2>
+      <form id="form-login">
+        <div class="form-group mb-4">
+          <label>Email Address</label>
+          <input type="email"
+                 id="login-email"
+                 placeholder="sample@gmail.com"
+                 value="mia@email.com"
+                 autocomplete="off"
+                 required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label>Password</label>
+          <input type="password"
+                 id="login-password"
+                 placeholder="************"
+                 value="solongbouldercity"
+                 autocomplete="current-password"
+                 required>
+        </div>
+
+        <div class="vstack gap-2">
+          <button type="submit" id="login-submit" class="btn btn-primary col-md-3">Log In</button>
+          <a href="#" class="auth-link" name="redirect-link" redirect-to="register">Don't have an account? Click here to register.</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Error Message Popup Box -->
+    <!-- References:
+      https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered
+      https://getbootstrap.com/docs/5.3/components/modal/#varying-modal-content
+    -->
+    <div id="popup-error" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Error</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <p id="error-message">There has been an error.</p>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Channel Creation -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="channel-create" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Create Channel</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="form-channel-create">
+              <div class="form-group mb-4">
+                <label>Channel Name</label>
+                <input type="text"
+                       id="channel-create-name"
+                       placeholder="COMP6080 Group"
+                       required>
+              </div>
+
+              <div class="form-group mb-4">
+                <label>Description (optional)</label>
+                <input type="text"
+                       id="channel-create-description"
+                       placeholder="Add a brief description">
+              </div>
+
+              <div class="form-group mb-4">
+                <input type="checkbox"
+                       id="channel-create-private">
+                <label>Private Channel</label>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" id="channel-create-submit" class="btn btn-primary" data-bs-dismiss="modal">Create</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Side Bar -->
+      <div id="channel-side-bar">
+        <!-- Channel Creation Button -->
+        <button id="view-profile-button" type="button" class="btn btn-outline-primary side-bar-btn" data-bs-toggle="modal" data-bs-target="#user-profile-edit">Edit Profile</button>
+        <hr>
+        <button id="channel-create-button" type="button" class="btn btn-outline-secondary side-bar-btn" data-bs-toggle="modal" data-bs-target="#channel-create">
+          <img src="assets/plus-square.svg" alt="create-icon">
+          Create channel
+        </button>
+
+        <!-- Channel List -->
+        <hr>
+        <h5>Private Channels</h5>
+        <div class="list-group">
+          <div id="channel-list-private"></div>
+        </div>
+        <h5>Public Channels</h5>
+        <div class="list-group">
+          <div id="channel-list-public"></div>
+        </div>
+      </div>
+
+      <!-- Separation Line -->
+      <!-- Reference: https://getbootstrap.com/docs/5.3/helpers/vertical-rule/ -->
+      <div class="d-flex vertical-line">
+        <div class="vr"></div>
+      </div>
+
+      <!-- Channel Pages -->
+      <div id="channel-pages" hidden="true">
+        <!-- Channel Details -->
+        <h5 id="channel-name">No channel selected.</h5>
+        <br>
+        <div id="channel-non-member-options" hidden="true">
+          <button type="button" id="channel-join-button" class="btn btn-outline-success d-inline-block">Join Channel</button>
+        </div>
+        <div id="channel-member-options" hidden="true">
+          <button type="button" id="channel-invite-button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#user-invite">Invite Users</button>
+          <div>
+            <button type="button" id="channel-edit-button" class="btn btn-secondary d-inline-block">Edit Details</button>
+            <button type="button" id="channel-leave-button" class="btn btn-outline-danger d-inline-block">Leave Channel</button>
+          </div>
+          <br>
+
+          <!-- Message Sending -->
+          <textarea id="message-send"
+                  class="d-inline-block"
+                  placeholder="Enter a message to send."
+                  required></textarea>
+          <button type="submit" id="message-send-submit" class="btn btn-primary d-inline-block">
+            <img src="assets/send.svg" alt="send-icon">
+            Send
+          </button>
+          <div class="list-group">
+            <div id="channel-messages"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Channel Details Form -->
+      <!-- Reference: https://getbootstrap.com/docs/5.3/forms/overview/ -->
+      <div id="channel-details" hidden="true">
+        <h2>Edit Channel Details</h2>
+        <form id="form-channel-edit" name="auth-form">
+          <div class="form-group mb-4">
+            <label>Name</label>
+            <input type="text"
+                   id="channel-edit-name"
+                   class="channel-input-box"
+                   required>
+          </div>
+
+          <div class="form-group mb-4">
+            <label>Description</label>
+            <input type="text"
+                   id="channel-edit-description">
+          </div>
+
+          <div class="form-group mb-4">
+            <input type="checkbox"
+                    id="channel-edit-private"
+                    disabled>
+            <label>Private Channel</label>
+          </div>
+
+          <div class="form-group mb-4">
+            <small id="channel-edit-created-info"></small>
+          </div>
+
+          <button type="button" id="channel-save-changes" class="btn btn-primary">Save Changes</button>
+          <button type="button" id="channel-edit-cancel" class="btn btn-outline-primary">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Message Edit -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="message-edit" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Edit Message</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="form-message-edit">
+              <div class="form-group mb-4">
+                <textarea id="message-editor"
+                      class="w-100 form-control"
+                      placeholder="Enter a message to send."
+                      required></textarea>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" id="message-edit-submit" class="btn btn-primary" data-bs-dismiss="modal">Save Changes</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Pin -->
+    <!-- References:
+      https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered
+      https://getbootstrap.com/docs/5.3/components/modal/#scrolling-long-content
+    -->
+    <div id="message-pin" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Pinned Messages</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div id="pinned-messages" class="list-group"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message React -->
+    <!-- Reference: https://getbootstrap.com/docs/5.3/components/badge/#buttons -->
+    <button id="message-react-heart" class="btn btn-outline-primary react-button" name="message-react-heart" message-id="none" hidden>
+      &#x1F497;
+      <span id="num-react-heart" class="badge react-number"></span>
+    </button>
+    <button id="message-react-crying" class="btn btn-outline-primary react-button" name="message-react-crying" message-id="none" hidden>
+      &#128557;
+      <span class="badge react-number"></span>
+    </button>
+    <button id="message-react-clown" class="btn btn-outline-primary react-button" name="message-react-clown" message-id="none" hidden>
+      &#129313;
+      <span class="badge react-number"></span>
+    </button>
+    <button id="message-react-angry" class="btn btn-outline-primary react-button" name="message-react-angry" message-id="none" hidden>
+      &#128544;
+      <span class="badge react-number"></span>
+    </button>
+
+    <!-- User Invite -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="user-invite" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Invite Users</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Reference: https://getbootstrap.com/docs/5.3/components/list-group/#checkboxes-and-radios -->
+            <ul id="user-invite-list" class="list-group">
+              <li id="user-invite-user-name" class="list-group-item"></li>
+            </ul>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" id="invite-users-button" class="btn btn-outline-primary" data-bs-dismiss="modal">Invite Users</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="user-profile-details" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="user-profile-name" class="modal-title"></h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div>
+              <span>Email: </span>
+              <span id="user-profile-email"></span>
+            </div>
+            <br>
+            <h5>Bio</h5>
+            <p id="user-profile-bio"></p>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Profile -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="user-profile-edit" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Edit Profile</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="form-profile-edit">
+              <div class="form-group mb-4">
+                <label>Name</label>
+                <input type="text"
+                      id="user-profile-edit-name"
+                      placeholder="Hayden Slackr"
+                      required>
+              </div>
+
+              <div class="form-group mb-4">
+                <label>Email Address</label>
+                <input type="email"
+                      id="user-profile-edit-email"
+                      placeholder="sample@gmail.com"
+                      autocomplete="off"
+                      required>
+              </div>
+
+              <div class="form-group mb-4">
+                <div class="d-flex gap-2">
+                  <label>Bio</label>
+                  <textarea id="user-profile-edit-bio"
+                            placeholder="Tell other users about yourself."></textarea>
+                </div>
+              </div>
+            </form>
+
+            <button type="button" id="change-password-button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#user-change-password">Change Password</button>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" id="user-profile-edit-submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Change Password -->
+    <!-- References: https://getbootstrap.com/docs/5.3/components/modal/#vertically-centered -->
+    <div id="user-change-password" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Change Password</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="form-change-password">
+              <div class="form-group mb-4">
+                <label>New Password</label>
+                <input type="password"
+                      id="user-new-password"
+                      placeholder="************"
+                      autocomplete="new-password"
+                      required>
+              </div>
+
+              <div class="form-group mb-4">
+                <input type="checkbox"
+                      id="show-password">
+                <label>Show Password</label>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <div class="justify-content-between">
+              <button type="submit" id="user-change-password-submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#user-profile-edit">Save Password</button>
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#user-profile-edit">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2023 Shakira COMP6080</p>
+  </footer>
+  <script type="module" src="src/main.js"></script>
+</body>
+
+</html>
